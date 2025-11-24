@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom"; // Remove BrowserRouter import
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
-import Feed from "./pages/Feed";
+import Feed from "./Pages/Feed";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
