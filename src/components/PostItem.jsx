@@ -8,7 +8,7 @@ import { formatTimeAgo } from "../utils/dateUtils";
 
 const PostItem = ({ post }) => {
   // --- Global / Auth ---
-  const API_URL = "http://localhost:5000";
+  const API_URL = "https://appify-lab-task-backend.vercel.app";
   const { token, user } = useMemo(() => ({
       token: localStorage.getItem("token"),
       user: JSON.parse(localStorage.getItem("user"))
