@@ -1,13 +1,13 @@
-import React, { useState, useRef, useCallback, memo, useMemo } from 'react';
+import React, { useState, useCallback, memo, useMemo } from 'react';
 import axios from 'axios';
 import { formatTimeAgo } from '../utils/dateUtils';
-import ReactionPicker from './ReactionPicker';
-import { getReactionLabel } from './ReactionConstants';
+// import ReactionPicker from './ReactionPicker';  <-- REMOVE THIS
+// import { getReactionLabel } from './ReactionConstants'; <-- REMOVE THIS
 import LikersModal from './LikersModal';
-import CommentReactions from './CommentReactions'; // The component created above
-import ReplyInput from './ReplyInput'; // The component created above
+import CommentReactions from './CommentReactions';
+import ReplyInput from './ReplyInput';
+import CommentReactionAction from './CommentReactionAction'; // <-- IMPORT NEW COMPONENT
 
-// Memoized to prevent recursive re-renders of the entire tree
 const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
   
   // --- STATE ---
@@ -22,18 +22,17 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
 
   const [showReplyInput, setShowReplyInput] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
-  const [likersModalData, setLikersModalData] = useState(null); // null = hidden
+  // const [showPicker, setShowPicker] = useState(false); <-- REMOVED (Handled in child)
+  const [likersModalData, setLikersModalData] = useState(null);
 
-  const hoverTimerRef = useRef(null);
+  // const hoverTimerRef = useRef(null); <-- REMOVED (Handled in child)
   
-  // Get Auth Data once
   const { token, user } = useMemo(() => ({
       token: localStorage.getItem('token'),
       user: JSON.parse(localStorage.getItem('user'))
   }), []);
 
-  const API_URL = 'https://appify-lab-task-backend.vercel.app';
+  const API_URL = 'http://localhost:5000';
   const isReply = !!comment.parentComment;
 
   // --- HANDLERS ---
@@ -43,10 +42,8 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
         setShowReplies(false);
         return;
     }
-
     setShowReplies(true);
     
-    // Only fetch if not already loaded to save bandwidth
     if (!areRepliesLoaded && replyCount > 0) {
       setIsLoadingReplies(true);
       try {
@@ -69,13 +66,11 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
       setShowReplyInput(false);
 
       if (!isReply) {
-        // If I am a root comment, add to my replies list
         setReplies(prev => [...prev, newReply]);
         setReplyCount(prev => prev + 1);
         setShowReplies(true);
-        setAreRepliesLoaded(true); // We have data now
+        setAreRepliesLoaded(true);
       } else {
-        // If I am a reply, tell my parent to add this
         if (onChildReplyAdd) onChildReplyAdd(newReply);
       }
     } catch (err) {
@@ -83,17 +78,14 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
     }
   }, [onReplySubmit, comment._id, isReply, onChildReplyAdd]);
 
-  // Memoize child reply handler to prevent cascading re-renders
   const handleChildNewReply = useCallback((newReplyObj) => {
     setReplies(prev => [...prev, newReplyObj]);
     setReplyCount(prev => prev + 1);
   }, []);
 
-  // --- REACTION LOGIC ---
-
-  const handleReactionSelect = useCallback(async (type) => {
-    setShowPicker(false);
-
+  // --- REACTION LOGIC (Only Data Handling now) ---
+  // This function is passed to the child component
+  const handleReactionChange = useCallback(async (type) => {
     // Optimistic Update
     const isRemoving = reaction === type;
     const newReaction = isRemoving ? null : type;
@@ -102,8 +94,8 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
     setLikesCount(prev => isRemoving ? Math.max(0, prev - 1) : (reaction ? prev : prev + 1));
     
     setTopReactions(prev => {
-        let list = prev.filter(t => t !== (isRemoving ? type : reaction)); // remove old
-        if (!isRemoving) list = [type, ...list]; // add new
+        let list = prev.filter(t => t !== (isRemoving ? type : reaction)); 
+        if (!isRemoving) list = [type, ...list]; 
         return list.slice(0, 2);
     });
 
@@ -114,19 +106,11 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (err) {
-       // revert logic could go here
        console.error(err);
     }
   }, [reaction, comment._id, token]);
 
-  // Reaction Picker Hover Logic
-  const handleMouseEnter = () => {
-    hoverTimerRef.current = setTimeout(() => setShowPicker(true), 600);
-  };
-  const handleMouseLeave = () => {
-    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-    setTimeout(() => setShowPicker(false), 300); // slight delay before closing
-  };
+  // Removed local handleMouseEnter/Leave
 
   const fetchLikers = useCallback(async (e) => {
     e.stopPropagation();
@@ -141,16 +125,10 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
     }
   }, [likesCount, comment._id, token]);
 
-  // Derived styles
-  const reactionStyle = useMemo(() => 
-     reaction ? getReactionLabel(reaction) : { label: 'Like', color: '#65676b' }
-  , [reaction]);
-
   return (
     <div style={{ position: 'relative', marginBottom: '8px' }}>
       <div className="_comment_main" style={{ display: 'flex', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
         
-        {/* Avatar */}
         <img
           src={comment.userId.profilePic || '/assets/images/profile.png'}
           alt="Avatar"
@@ -165,7 +143,6 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
         />
 
         <div className="_comment_bubble_wrapper" style={{ maxWidth: 'calc(100% - 50px)' }}>
-          {/* Comment Bubble */}
           <div
             style={{
               background: '#f0f2f5',
@@ -182,7 +159,6 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
               {comment.content}
             </p>
 
-            {/* Optimized Reaction Bubbles Component */}
             <CommentReactions 
                 count={likesCount} 
                 topReactions={topReactions} 
@@ -194,23 +170,11 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
           {/* Action Links Row */}
           <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: '#65676b', fontWeight: 'bold', margin: '4px 0 0 12px' }}>
             
-            {/* Like Button & Picker */}
-            <div 
-                style={{ position: 'relative', cursor: 'pointer', color: reactionStyle.color }}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleReactionSelect(reaction || 'Like')}
-            >
-               {reactionStyle.label}
-               {showPicker && (
-                  <div 
-                    style={{position: 'absolute', bottom: '20px', left: '-10px', zIndex: 100}}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                     <ReactionPicker onSelect={handleReactionSelect} onClose={() => setShowPicker(false)} />
-                  </div>
-               )}
-            </div>
+            {/* --- NEW OPTIMIZED BUTTON --- */}
+            <CommentReactionAction 
+                myReaction={reaction} 
+                onReact={handleReactionChange} 
+            />
 
             <span onClick={() => setShowReplyInput(true)} style={{ cursor: 'pointer' }}>Reply</span>
             <span style={{ fontWeight: 'normal' }}>{formatTimeAgo(comment.createdAt)}</span>
@@ -218,7 +182,6 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
         </div>
       </div>
 
-      {/* Optimized Reply Input */}
       {showReplyInput && (
         <div style={{ paddingLeft: isReply ? '32px' : '40px' }}>
             <ReplyInput 
@@ -230,7 +193,6 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
         </div>
       )}
 
-      {/* Replies Section */}
       {!isReply && replyCount > 0 && (
         <div style={{ paddingLeft: '40px', marginTop: '5px' }}>
           <div
@@ -267,7 +229,6 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
         </div>
       )}
 
-      {/* Modal Portal - Only renders if data exists */}
       {likersModalData && (
           <LikersModal 
             likes={likersModalData} 
@@ -278,6 +239,4 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
   );
 };
 
-// Strict equality check usually not needed for simple objects, 
-// but React.memo is default here.
 export default memo(CommentItem);

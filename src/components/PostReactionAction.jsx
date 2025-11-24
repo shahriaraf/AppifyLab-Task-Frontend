@@ -1,91 +1,98 @@
-import React, { useState, useRef, memo } from "react";
+import React, { useState, memo } from "react";
 import ReactionPicker from "./ReactionPicker";
 import { REACTION_ICONS, getReactionLabel } from "./ReactionConstants";
 
-const LONG_PRESS_DURATION = 500;
-
 const PostReactionAction = ({ myReaction, onReact }) => {
   const [showPicker, setShowPicker] = useState(false);
-  const openTimerRef = useRef(null);
-  const closeTimerRef = useRef(null);
-  const longPressTimerRef = useRef(null);
 
-  // Derived style
-  const reactionStyle = myReaction ? getReactionLabel(myReaction) : null;
+  // Get Style for the main button (Color/Label)
+  const reactionStyle = myReaction 
+    ? getReactionLabel(myReaction) 
+    : { label: 'Like', color: '#65676b' };
 
-  // Handlers
-  const handleMouseEnter = () => {
-    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
-    if (!showPicker) {
-      openTimerRef.current = setTimeout(() => setShowPicker(true), 500);
-    }
+  // Toggle the menu open/close
+  const handleMainClick = (e) => {
+    e.stopPropagation();
+    setShowPicker((prev) => !prev);
   };
 
-  const handleMouseLeave = () => {
-    if (openTimerRef.current) clearTimeout(openTimerRef.current);
-    closeTimerRef.current = setTimeout(() => setShowPicker(false), 300);
-  };
-
-  const handleTouchStart = () => {
-    longPressTimerRef.current = setTimeout(() => setShowPicker(true), LONG_PRESS_DURATION);
-  };
-
-  const handleTouchEnd = () => {
-    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-    if (!showPicker) onReact(myReaction || "Like");
-  };
-
-  const handleSelect = (type) => {
-    setShowPicker(false);
-    onReact(type);
+  // Handle selection from the menu
+  const handlePickerSelect = (type) => {
+    onReact(type); // Parent handles the toggle logic (add/remove)
+    setShowPicker(false); // Close menu after selection
   };
 
   return (
-    <div
-      className="_feed_reaction_wrapper"
-      style={{ flex: 1, position: "relative" }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
+    <div className="_feed_inner_timeline_reaction_like" style={{ flex: 1, position: "relative" }}>
+      
+      {/* --- POPUP MENU --- */}
       {showPicker && (
         <div
           style={{
-            position: "absolute", bottom: "40px", left: "10%",
-            transform: "translateX(-50%)", zIndex: 100,
+            position: "absolute",
+            bottom: "20%", // Sits above the button
+            left: "10%",
+            width: "100%", // Centers it relative to the button
+            display: "flex",
+            justifyContent: "center",
+            zIndex: 100,
+            marginBottom: "10px",
+            animation: "fadeIn 0.2s ease-out"
           }}
-          // Stop propagation so clicking picker doesn't trigger post click
-          onClick={(e) => e.stopPropagation()} 
+          onClick={(e) => e.stopPropagation()}
         >
-          <ReactionPicker onSelect={handleSelect} onClose={() => setShowPicker(false)} />
+          {/* We pass onClose so clicking outside or on 'X' can close it if your picker supports it */}
+          <ReactionPicker onSelect={handlePickerSelect} onClose={() => setShowPicker(false)} />
         </div>
       )}
 
+      {/* --- MAIN BUTTON --- */}
       <button
+        onClick={handleMainClick}
         style={{
-          background: "none", border: "none", cursor: "pointer",
-          color: reactionStyle ? reactionStyle.color : "#65676b",
-          fontWeight: "600", fontSize: "14px",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          gap: "8px", width: "100%", padding: "10px",
+          background: "transparent", 
+          border: "none", 
+          cursor: "pointer",
+          width: "100%", 
+          padding: "10px 0",
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center", 
+          gap: "8px",
+          WebkitTapHighlightColor: "transparent"
         }}
-        onClick={() => !showPicker && onReact(myReaction || "Like")}
       >
         {myReaction ? (
+          // ACTIVE STATE (Blue/Red etc)
           <>
-            <div style={{ transform: "scale(1.2)", display: "flex" }}>{REACTION_ICONS[myReaction]}</div>
-            <span>{reactionStyle.label}</span>
+            <div style={{ fontSize: '20px', display: 'flex' }}>
+                {REACTION_ICONS[myReaction]}
+            </div>
+            <span style={{ 
+                color: reactionStyle.color, 
+                fontWeight: "600", 
+                fontSize: "14px" 
+            }}>
+              {reactionStyle.label}
+            </span>
           </>
         ) : (
+          // DEFAULT STATE (Gray)
           <>
-            <svg className="_reaction_svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-               <path stroke="#000" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+            <svg className="_reaction_svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+              <path stroke="#65676b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
             </svg>
-            <span>Like</span>
+            <span style={{ color: "#65676b", fontWeight: "600", fontSize: "14px" }}>Like</span>
           </>
         )}
       </button>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

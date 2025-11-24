@@ -8,7 +8,7 @@ import { formatTimeAgo } from "../utils/dateUtils";
 
 const PostItem = ({ post }) => {
   // --- Global / Auth ---
-  const API_URL = "https://appify-lab-task-backend.vercel.app";
+  const API_URL = "http://localhost:5000";
   const { token, user } = useMemo(() => ({
       token: localStorage.getItem("token"),
       user: JSON.parse(localStorage.getItem("user"))
@@ -142,7 +142,7 @@ const PostItem = ({ post }) => {
 
   return (
     <div className="_feed_inner_timeline_post_area _b_radious6 _padd_b24 _padd_t24 _mar_b16" 
-         style={{ overflow: "visible", position: "relative", marginBottom: "20px", background: '#fff' }}>
+         style={{ overflow: "visible", position: "relative", marginBottom: "20px", background: '#fff', fontFamily: 'poppins, sans-serif' }}>
       
       {/* --- Header --- */}
       <div className="_feed_inner_timeline_content _padd_r24 _padd_l24">
