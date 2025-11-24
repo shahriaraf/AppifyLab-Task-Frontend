@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import axios from "axios";
+import { toast } from "react-toastify"; // <--- Added Import
 import CommentItem from "./CommentItem";
 import LikersModal from "./LikersModal";
 import PostReactionAction from "./PostReactionAction";
 import PostCommentInput from "./PostCommentInput";
 import { formatTimeAgo } from "../utils/dateUtils";
 
-const PostItem = ({ post }) => {
+const PostItem = ({ post, onDelete }) => {
   // --- Global / Auth ---
   const API_URL = "https://appify-lab-task-backend.vercel.app";
   const { token, user } = useMemo(() => ({
@@ -15,7 +16,6 @@ const PostItem = ({ post }) => {
   }), []);
 
   // --- State ---
-  // Safety Check: Ensure counts default to 0 if undefined
   const [myReaction, setMyReaction] = useState(post.userReaction || null);
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
   const [recentReactors, setRecentReactors] = useState(post.recentReactors || []);
@@ -28,16 +28,43 @@ const PostItem = ({ post }) => {
   const [showLikersModal, setShowLikersModal] = useState(false);
   const [likersData, setLikersData] = useState([]);
 
+  // Dropdown State
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Check Ownership
+  const isMyPost = useMemo(() => {
+    const postOwnerId = post.userId._id || post.userId;
+    return user && postOwnerId === user._id;
+  }, [post.userId, user]);
+
   // --- Sync State ---
   useEffect(() => {
     setMyReaction(post.userReaction || null);
     setLikesCount(post.likesCount || 0);
     setRecentReactors(post.recentReactors || []);
-    console.log(recentReactors)
     setCommentsCount(post.commentsCount || 0);
   }, [post]);
 
   // --- Handlers ---
+
+  // --- UPDATED DELETE HANDLER (No Confirm + Dark Toast) ---
+  const handleDelete = async () => {
+    try {
+        await axios.delete(`${API_URL}/posts/${post._id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        // Update UI immediately
+        if (onDelete) onDelete(post._id);
+
+        // Show Dark Toast
+        toast.success("Post deleted successfully", { theme: "dark" });
+
+    } catch (err) {
+        console.error("Failed to delete post", err);
+        toast.error("Failed to delete post", { theme: "dark" });
+    }
+  };
 
   const handleReaction = useCallback(async (type) => {
     const isRemoving = myReaction === type;
@@ -45,15 +72,11 @@ const PostItem = ({ post }) => {
     
     setMyReaction(newReaction);
     
-    // Optimistic Count Update
     setLikesCount(prev => {
         if (isRemoving) return Math.max(0, prev - 1);
-        // If switching reaction (e.g. Like -> Love), count stays same. 
-        // If adding new reaction (Null -> Like), count + 1.
         return myReaction ? prev : prev + 1;
     });
 
-    // Optimistic Stack Update
     if (!isRemoving && !myReaction) {
         const me = { _id: user._id, profilePic: user.profilePic };
         setRecentReactors(prev => [me, ...prev].slice(0, 3));
@@ -71,8 +94,6 @@ const PostItem = ({ post }) => {
       console.error("Reaction failed", err);
     }
   }, [myReaction, post._id, token, user]);
-
-
 
   const toggleComments = useCallback(async () => {
     const newState = !showComments;
@@ -118,7 +139,6 @@ const PostItem = ({ post }) => {
     }
   }, [likesCount, post._id, token]);
 
-  // --- Render Helpers ---
   const renderAvatarStack = () => (
     <div
       style={{ display: "flex", flexDirection: "row-reverse", alignItems: "center", cursor: "pointer" }}
@@ -130,10 +150,10 @@ const PostItem = ({ post }) => {
           src={u.profilePic || "/assets/images/profile.png"}
           alt=""
           style={{
-            width: "18px", height: "18px", borderRadius: "50%",
-            border: "2px solid white", marginRight: i === 0 ? 0 : "-6px",
+            width: "24px", height: "24px", borderRadius: "50%",
+            border: "2px solid white", marginRight: i === 0 ? 0 : "-10px",
             objectFit: "cover",
-            position: 'relative', zIndex: 10 - i // Ensure visual stacking order
+            position: 'relative', zIndex: 10 - i
           }}
         />
       ))}
@@ -160,8 +180,57 @@ const PostItem = ({ post }) => {
               </p>
             </div>
           </div>
-          <div className="_feed_inner_timeline_post_box_dropdown">
-            <button className="_feed_timeline_post_dropdown_link">...</button>
+          
+          {/* --- Dropdown Menu --- */}
+          <div className="_feed_inner_timeline_post_box_dropdown" style={{position: 'relative'}}>
+            <button 
+                className="_feed_timeline_post_dropdown_link" 
+                onClick={() => setShowDropdown(!showDropdown)}
+                style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '20px', lineHeight: '1' }}
+            >
+                ...
+            </button>
+            
+            {showDropdown && (
+                <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    background: '#fff',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+                    borderRadius: '8px',
+                    zIndex: 1000,
+                    minWidth: '150px',
+                    overflow: 'hidden',
+                    border: '1px solid #eee'
+                }}>
+                    {isMyPost ? (
+                        <div 
+                            onClick={handleDelete}
+                            style={{
+                                padding: '12px 15px',
+                                cursor: 'pointer',
+                                color: '#e41e3f',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                transition: 'background 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = '#f8f8f8'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Delete Post
+                        </div>
+                    ) : (
+                        <div style={{ padding: '10px 15px', fontSize: '14px', color: '#999' }}>
+                            No actions available
+                        </div>
+                    )}
+                </div>
+            )}
           </div>
         </div>
 
@@ -176,19 +245,18 @@ const PostItem = ({ post }) => {
         )}
       </div>
 
-      {/* --- FIX: Unified Stats Bar --- */}
+      {/* --- Stats Bar --- */}
       {(likesCount > 0 || commentsCount > 0) && (
         <div 
             className="_feed_inner_timeline_total_reacts _padd_r24 _padd_l24 _mar_b26"
             style={{ 
                 display: "flex", 
                 alignItems: "center", 
-                justifyContent: "space-between", // Pushes Likes left, Comments right
+                justifyContent: "space-between",
                 minHeight: "30px",
                 marginTop: "15px" 
             }}
         >
-            {/* LEFT SIDE: Likes */}
             <div style={{ display: "flex", alignItems: "center" }}>
                 {likesCount > 0 && (
                     <>
@@ -196,14 +264,15 @@ const PostItem = ({ post }) => {
                         <div 
                             onClick={fetchLikers}
                             style={{ 
-                                marginLeft: recentReactors.length > 0 ? "8px" : "0", 
+                                marginLeft: recentReactors.length > 0 ? "-10px" : "0", 
                                 background: '#1890ff', 
                                 color: '#fff',
                                 borderRadius: '50%',
-                                width: '20px', height: '20px',
+                                width: '24px', height: '24px',
                                 fontSize: '11px',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                zIndex: '10'
                             }}
                         >
                             {likesCount}
@@ -212,7 +281,6 @@ const PostItem = ({ post }) => {
                 )}
             </div>
 
-            {/* RIGHT SIDE: Comments */}
             {commentsCount > 0 && (
                 <div 
                     onClick={toggleComments} 
@@ -258,7 +326,6 @@ const PostItem = ({ post }) => {
         </button>
       </div>
 
-      {/* --- Comments Section --- */}
       {showComments && (
         <div className="_timline_comment_main" style={{ display: "block", padding: "15px 24px" }}>
           <PostCommentInput 

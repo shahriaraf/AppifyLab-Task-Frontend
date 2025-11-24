@@ -22,7 +22,7 @@ const Header = ({ user }) => {
         <div className="container _custom_container">
           <div className="_logo_wrap">
             <Link className="navbar-brand" to="/">
-              <img src="/assets/images/logo.svg" alt="Image" className="_nav_logo" />
+              <img src="/assets/images/circlefy.png" alt="Image" className="_nav_logo"  />
             </Link>
           </div>
           
@@ -92,7 +92,7 @@ const Header = ({ user }) => {
                 <img src={user?.profilePic || "/assets/images/profile.png"} alt="Image" className="_nav_profile_img" />
               </div>
               <div className="_header_nav_dropdown">
-                <p className="_header_nav_para">{user?.firstName} {user?.lastName}</p>
+                <p className="_header_nav_para">{user?.firstName}</p>
                 <button className="_header_nav_dropdown_btn _dropdown_toggle" type="button" onClick={() => setShowProfile(!showProfile)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" fill="none" viewBox="0 0 10 6"><path fill="#112032" d="M5 5l.354.354L5 5.707l-.354-.353L5 5zm4.354-3.646l-4 4-.708-.708 4-4 .708.708zm-4.708 4l-4-4 .708-.708 4 4-.708.708z" /></svg>
                 </button>
@@ -131,7 +131,7 @@ const Header = ({ user }) => {
                   <div className="_header_mobile_menu_top_inner">
                     <div className="_header_mobile_menu_logo">
                       <Link to="/" className="_mobile_logo_link">
-                        <img src="/assets/images/logo.svg" alt="Image" className="_nav_logo" />
+                        <img src="/assets/images/circlefy.png" alt="Image" className="_nav_logo" style={{height: "28px"}} />
                       </Link>
                     </div>
                     <div className="_header_mobile_menu_right">
