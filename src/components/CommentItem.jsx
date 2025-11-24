@@ -37,7 +37,7 @@ const CommentItem = ({
     const hoverTimerRef = useRef(null);
     
     // Env & Auth
-    const API_URL = "http://localhost:5000";
+    const API_URL = "https://appify-lab-task-backend.vercel.app";
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
 

@@ -345,7 +345,7 @@
     }
     /*--- Desktop Menu ---- */
     ._header_nav {
-        display: none;
+        display: block;
     }
     ._layout_mode_swithing_btn {
         display: none;

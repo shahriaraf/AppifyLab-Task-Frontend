@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     // Axios instance with interceptor
-    const api = axios.create({ baseURL: "http://localhost:5000" });
+    const api = axios.create({ baseURL: "https://appify-lab-task-backend.vercel.app" });
 
     useEffect(() => {
         // Check LocalStorage on Load
