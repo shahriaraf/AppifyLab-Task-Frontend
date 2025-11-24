@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { REACTION_ICONS } from './ReactionConstants';
 
 const LikersModal = ({ likes, onClose }) => {
+  
+  // Prevent clicks inside modal from closing it
+  const handleContentClick = (e) => e.stopPropagation();
+
   return (
     <div 
       onClick={onClose}
       style={{
         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', 
         background: 'rgba(255,255,255,0.8)', zIndex: 9999, display: 'flex', 
-        justifyContent: 'center', alignItems: 'center'
+        justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(2px)'
       }}
     >
       <div 
-        onClick={(e) => e.stopPropagation()} 
+        onClick={handleContentClick} 
         style={{ 
             background: 'white', 
             borderRadius: '12px', 
@@ -22,22 +26,31 @@ const LikersModal = ({ likes, onClose }) => {
             display: 'flex', 
             flexDirection: 'column',
             overflow: 'hidden',
-            border: '1px solid #ddd'
+            border: '1px solid #ddd',
+            animation: 'fadeIn 0.2s ease-out'
         }}
       >
         
         {/* Header */}
         <div style={{padding: '15px 20px', borderBottom: '1px solid #e5e5e5', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <span style={{fontSize: '18px', fontWeight: '700', color: '#050505'}}>Reactions</span>
-            <button onClick={onClose} style={{border:'none', background:'#e4e6eb', borderRadius:'50%', width:'32px', height:'32px', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'16px', color:'#606770'}}>✕</button>
+            <button 
+                onClick={onClose} 
+                style={{
+                    border:'none', background:'#e4e6eb', borderRadius:'50%', 
+                    width:'32px', height:'32px', cursor:'pointer', 
+                    display:'flex', alignItems:'center', justifyContent:'center', 
+                    fontSize:'16px', color:'#606770', transition: 'background 0.2s'
+                }}
+            >✕</button>
         </div>
         
-        {/* List */}
+        {/* List - Optimized: Uses native scrolling */}
         <div style={{ padding: '0 10px', overflowY: 'auto', flex: 1 }}>
             {likes.length === 0 && <p style={{padding:'20px', textAlign:'center', color:'#65676b'}}>No reactions yet.</p>}
 
             {likes.map((like) => (
-                <div key={like._id} style={{display: 'flex', alignItems: 'center', padding: '10px', borderRadius: '8px'}}>
+                <div key={like._id} style={{display: 'flex', alignItems: 'center', padding: '10px', borderRadius: '8px', transition: 'background 0.1s'}} className="liker-item">
                     
                     {/* Avatar + Reaction Badge */}
                     <div style={{position: 'relative', marginRight: '12px', cursor: 'pointer'}}>
@@ -46,7 +59,6 @@ const LikersModal = ({ likes, onClose }) => {
                             alt="" 
                             style={{width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #e5e5e5'}}
                         />
-                        {/* The Badge (Shows Heart/Haha/Like) */}
                         <div style={{
                             position: 'absolute', 
                             bottom: '-2px', 
@@ -67,12 +79,9 @@ const LikersModal = ({ likes, onClose }) => {
                         </div>
                     </div>
 
-                    {/* Name */}
-                    <div>
-                        <h4 style={{fontSize: '15px', margin:0, fontWeight: '600', color: '#050505', cursor: 'pointer'}}>
-                            {like.userId.firstName} {like.userId.lastName}
-                        </h4>
-                    </div>
+                    <h4 style={{fontSize: '15px', margin:0, fontWeight: '600', color: '#050505', cursor: 'pointer'}}>
+                        {like.userId.firstName} {like.userId.lastName}
+                    </h4>
                 </div>
             ))}
         </div>
@@ -81,4 +90,4 @@ const LikersModal = ({ likes, onClose }) => {
   );
 };
 
-export default LikersModal;
+export default memo(LikersModal);
