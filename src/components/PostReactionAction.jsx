@@ -5,12 +5,12 @@ import { REACTION_ICONS, getReactionLabel } from "./ReactionConstants";
 const PostReactionAction = ({ myReaction, onReact }) => {
   const [showPicker, setShowPicker] = useState(false);
 
-  // Get Style for the main button (Color/Label)
+
   const reactionStyle = myReaction 
     ? getReactionLabel(myReaction) 
     : { label: 'Like', color: '#65676b' };
 
-  // Toggle the menu open/close
+  // Toggle the menu 
   const handleMainClick = (e) => {
     e.stopPropagation();
     setShowPicker((prev) => !prev);
@@ -18,8 +18,8 @@ const PostReactionAction = ({ myReaction, onReact }) => {
 
   // Handle selection from the menu
   const handlePickerSelect = (type) => {
-    onReact(type); // Parent handles the toggle logic (add/remove)
-    setShowPicker(false); // Close menu after selection
+    onReact(type);
+    setShowPicker(false); 
   };
 
   return (
@@ -30,9 +30,9 @@ const PostReactionAction = ({ myReaction, onReact }) => {
         <div
           style={{
             position: "absolute",
-            bottom: "20%", // Sits above the button
+            bottom: "20%", 
             left: "10%",
-            width: "100%", // Centers it relative to the button
+            width: "100%",
             display: "flex",
             justifyContent: "center",
             zIndex: 100,
@@ -41,7 +41,7 @@ const PostReactionAction = ({ myReaction, onReact }) => {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* We pass onClose so clicking outside or on 'X' can close it if your picker supports it */}
+         
           <ReactionPicker onSelect={handlePickerSelect} onClose={() => setShowPicker(false)} />
         </div>
       )}

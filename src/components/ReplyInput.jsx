@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import { useState, memo } from 'react';
 
 const ReplyInput = ({ userProfilePic, targetName, onSubmit, onCancel }) => {
     const [text, setText] = useState('');
@@ -23,7 +23,7 @@ const ReplyInput = ({ userProfilePic, targetName, onSubmit, onCancel }) => {
                     placeholder={`Reply to ${targetName}...`}
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    onBlur={() => !text && onCancel()} // Optional: close on blur if empty
+                    onBlur={() => !text && onCancel()} 
                     style={{ 
                         width: '100%', height: '32px', padding: '0 10px', 
                         fontSize: '13px', borderRadius: '16px', 

@@ -14,5 +14,5 @@ export const formatTimeAgo = (dateString) => {
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
 
-  return date.toLocaleDateString(); // Fallback to date for older posts
+  return date.toLocaleDateString(); 
 };

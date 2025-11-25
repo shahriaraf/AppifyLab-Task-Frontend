@@ -71,5 +71,5 @@ const CommentReactions = ({ topReactions, myReaction, count, onClick }) => {
   );
 };
 
-// Only re-render if count or reaction types change
+
 export default memo(CommentReactions);

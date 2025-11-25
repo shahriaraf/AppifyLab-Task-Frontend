@@ -17,9 +17,7 @@ export const FeedProvider = ({ children }) => {
     const [nextCursor, setNextCursor] = useState(null);
     const [hasMore, setHasMore] = useState(true);
 
-    /**
-     * fetchPosts - Optimized for Infinite Scroll
-     */
+
     const fetchPosts = useCallback(async (isInitial = false) => {
         if (!token) return;
         
@@ -97,7 +95,7 @@ export const FeedProvider = ({ children }) => {
     return (
         <FeedContext.Provider value={{ 
             posts, 
-            setPosts, // <--- ADD THIS LINE (Required for Delete functionality)
+            setPosts, 
             feedLoading, 
             hasMore, 
             fetchPosts, 

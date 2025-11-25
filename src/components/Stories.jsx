@@ -1,21 +1,60 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 
 const Stories = ({ user }) => {
   const desktopScrollRef = useRef(null);
   const mobileScrollRef = useRef(null);
 
-  // Sample 10 friend stories
   const friends = [
-    { name: "Ryan Roslansky", profilePic: "/assets/images/card_ppl2.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "Jane Doe", profilePic: "/assets/images/card_ppl3.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "John Smith", profilePic: "/assets/images/card_ppl4.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "Emily Johnson", profilePic: "/assets/images/card_ppl2.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "Michael Brown", profilePic: "/assets/images/card_ppl3.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "Sarah Davis", profilePic: "/assets/images/card_ppl4.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "David Wilson", profilePic: "/assets/images/card_ppl2.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "Laura Martinez", profilePic: "/assets/images/card_ppl3.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "Chris Lee", profilePic: "/assets/images/card_ppl4.png", miniPic: "/assets/images/mini_pic.png" },
-    { name: "Anna Kim", profilePic: "/assets/images/card_ppl2.png", miniPic: "/assets/images/mini_pic.png" },
+    {
+      name: "Ryan Roslansky",
+      profilePic: "/assets/images/card_ppl2.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "Jane Doe",
+      profilePic: "/assets/images/card_ppl3.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "John Smith",
+      profilePic: "/assets/images/card_ppl4.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "Emily Johnson",
+      profilePic: "/assets/images/card_ppl2.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "Michael Brown",
+      profilePic: "/assets/images/card_ppl3.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "Sarah Davis",
+      profilePic: "/assets/images/card_ppl4.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "David Wilson",
+      profilePic: "/assets/images/card_ppl2.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "Laura Martinez",
+      profilePic: "/assets/images/card_ppl3.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "Chris Lee",
+      profilePic: "/assets/images/card_ppl4.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
+    {
+      name: "Anna Kim",
+      profilePic: "/assets/images/card_ppl2.png",
+      miniPic: "/assets/images/mini_pic.png",
+    },
   ];
 
   const scrollDesktop = (direction) => {
@@ -41,61 +80,56 @@ const Stories = ({ user }) => {
     width: "24px",
     height: "24px",
     borderRadius: "50%",
-    backgroundColor: "#1877F2", // Vivid Blue
-    border: "1px solid #fff",   // White Border
+    backgroundColor: "#1877F2",
+    border: "1px solid #fff",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
     boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-    outline: "none"
+    outline: "none",
   };
 
   return (
     <>
-      {/* Desktop Stories */}
-      <div 
-        className="_feed_inner_ppl_card _mar_b16" 
-        style={{ position: "relative" }} // Parent must be relative for absolute buttons
+      <div
+        className="_feed_inner_ppl_card _mar_b16"
+        style={{ position: "relative" }}
       >
-        
-        {/* LEFT BUTTON */}
         <button
           type="button"
           onClick={() => scrollDesktop("left")}
           style={{ ...arrowBtnStyle, left: "15px" }}
         >
-           <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="11" 
-            height="11" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="#fff" 
-            strokeWidth="2.5" 
-            strokeLinecap="round" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2.5"
+            strokeLinecap="round"
             strokeLinejoin="round"
           >
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
         </button>
-
-        {/* RIGHT BUTTON */}
         <button
           type="button"
           onClick={() => scrollDesktop("right")}
           style={{ ...arrowBtnStyle, right: "15px" }}
         >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="11" 
-            height="11" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="#fff" 
-            strokeWidth="2.5" 
-            strokeLinecap="round" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2.5"
+            strokeLinecap="round"
             strokeLinejoin="round"
           >
             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -119,10 +153,11 @@ const Stories = ({ user }) => {
               display: none;
             }
           `}</style>
-
-          {/* Current User Story */}
           <div style={cardStyle}>
-            <div className="_feed_inner_profile_story _b_radious6" style={{ width: '100%', height: '100%' }}>
+            <div
+              className="_feed_inner_profile_story _b_radious6"
+              style={{ width: "100%", height: "100%" }}
+            >
               <div className="_feed_inner_profile_story_image">
                 <img
                   src={user?.profilePic || "/assets/images/card_ppl1.png"}
@@ -133,7 +168,21 @@ const Stories = ({ user }) => {
                 <div className="_feed_inner_story_txt">
                   <div className="_feed_inner_story_btn">
                     <button className="_feed_inner_story_btn_link">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 14 14"><path stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 1v12M1 7h12"/></svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        fill="none"
+                        viewBox="0 0 14 14"
+                      >
+                        <path
+                          stroke="#fff"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M7 1v12M1 7h12"
+                        />
+                      </svg>
                     </button>
                   </div>
                   <p className="_feed_inner_story_para">Your Story</p>
@@ -145,7 +194,10 @@ const Stories = ({ user }) => {
           {/* Friend Stories */}
           {friends.map((f, idx) => (
             <div key={idx} style={cardStyle}>
-              <div className="_feed_inner_public_story _b_radious6" style={{ width: '100%', height: '100%' }}>
+              <div
+                className="_feed_inner_public_story _b_radious6"
+                style={{ width: "100%", height: "100%" }}
+              >
                 <div className="_feed_inner_public_story_image">
                   <img
                     src={f.profilePic}
@@ -170,7 +222,6 @@ const Stories = ({ user }) => {
         </div>
       </div>
 
-      {/* Mobile Stories - Unchanged */}
       <div className="_feed_inner_ppl_card_mobile _mar_b16">
         <div
           className="_feed_inner_ppl_card_area"
@@ -185,14 +236,27 @@ const Stories = ({ user }) => {
               <a href="#0" className="_feed_inner_ppl_card_area_link">
                 <div className="_feed_inner_ppl_card_area_story">
                   <img
-                    src={user?.profilePic || "/assets/images/mobile_story_img.png"}
+                    src={
+                      user?.profilePic || "/assets/images/mobile_story_img.png"
+                    }
                     alt="Your Story"
                     className="_card_story_img"
                   />
                   <div className="_feed_inner_ppl_btn">
                     <button className="_feed_inner_ppl_btn_link" type="button">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 12 12">
-                        <path stroke="#fff" strokeLinecap="round" strokeLinejoin="round" d="M6 2.5v7M2.5 6h7"/>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        fill="none"
+                        viewBox="0 0 12 12"
+                      >
+                        <path
+                          stroke="#fff"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 2.5v7M2.5 6h7"
+                        />
                       </svg>
                     </button>
                   </div>

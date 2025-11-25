@@ -9,6 +9,7 @@ const Header = ({ user }) => {
   
   const [showNotify, setShowNotify] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -92,7 +93,7 @@ const Header = ({ user }) => {
                 <img src={user?.profilePic || "/assets/images/profile.png"} alt="Image" className="_nav_profile_img" />
               </div>
               <div className="_header_nav_dropdown">
-                <p className="_header_nav_para">{user?.firstName}</p>
+                <p className="_header_nav_para">{user?.firstName} {user?.lastName}</p>
                 <button className="_header_nav_dropdown_btn _dropdown_toggle" type="button" onClick={() => setShowProfile(!showProfile)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" fill="none" viewBox="0 0 10 6"><path fill="#112032" d="M5 5l.354.354L5 5.707l-.354-.353L5 5zm4.354-3.646l-4 4-.708-.708 4-4 .708.708zm-4.708 4l-4-4 .708-.708 4 4-.708.708z" /></svg>
                 </button>
@@ -119,7 +120,8 @@ const Header = ({ user }) => {
               </div>
           </div>
         </div>
-      </div>
+        </div>
+      </nav>
 
       {/* ===================== 2. MOBILE MENU TOP ===================== */}
       <div className="_header_mobile_menu">
@@ -190,14 +192,36 @@ const Header = ({ user }) => {
                       <span className="_counting">2</span>								  
                     </a>
                   </li>
-                  <div className="_header_mobile_toggle">
+                  <div className="_header_mobile_toggle" style={{position: 'relative'}}>
                     <form>
-                      <button type="button" className="_header_mobile_btn_link">
+                      <button type="button" className="_header_mobile_btn_link" onClick={() => setShowMobileMenu(!showMobileMenu)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="14" fill="none" viewBox="0 0 18 14">
                           <path stroke="#666" strokeLinecap="round" strokeWidth="1.5" d="M1 1h16M1 7h16M1 13h16"/>
                         </svg>													  
                       </button>
                     </form>
+
+                    {/* MOBILE DROPDOWN CONTENT */}
+                    {showMobileMenu && (
+                        <div style={{
+                            position: 'absolute', 
+                            bottom: '30px', 
+                            right: '0', 
+                            background: '#fff', 
+                            width: '200px',
+                            boxShadow: '0 -4px 15px rgba(0,0,0,0.1)',
+                            borderRadius: '8px',
+                            zIndex: 99999,
+                            display: 'block',
+                            padding: '10px 0'
+                        }}>
+                             <ul className="_nav_dropdown_list" style={{marginLeft:10, marginBottom:-17, padding:0, listStyle: 'none'}}>
+                                <li className="_nav_dropdown_list_item">
+                                    <div className="_nav_dropdown_link" onClick={handleLogout} style={{cursor:'pointer'}}><div className="_nav_drop_info"><span><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="none" viewBox="0 0 19 19"><path stroke="#377DFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6.667 18H2.889A1.889 1.889 0 011 16.111V2.89A1.889 1.889 0 012.889 1h3.778M13.277 14.222L18 9.5l-4.723-4.722M18 9.5H6.667"/></svg></span>Log Out</div></div>
+                                </li>
+                            </ul>
+                        </div>
+                    )}
                   </div>
                 </ul>
               </div>
@@ -205,7 +229,7 @@ const Header = ({ user }) => {
           </div>
         </div>
       </div>
-    </nav>
+
     </>
   );
 };

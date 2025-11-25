@@ -24,7 +24,7 @@ const PostCommentInput = ({ userProfilePic, onSubmit }) => {
             className="form-control _comment_textarea"
             style={{ 
                 border: "none", background: "transparent", height: "36px", 
-                width: '100%', outline: 'none' // Added outline none
+                width: '100%', outline: 'none' 
             }}
             placeholder="Write a comment..."
             value={text}

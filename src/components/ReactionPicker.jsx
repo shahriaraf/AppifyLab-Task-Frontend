@@ -17,7 +17,7 @@ const ReactionPicker = ({ onSelect, onClose }) => {
             {/* The Picker Box */}
             <div style={{
                 position: 'absolute',
-                bottom: '25px', // Adjusted to appear above text
+                bottom: '25px', 
                 left: '-10px',
                 backgroundColor: 'white',
                 borderRadius: '50px',
@@ -47,7 +47,7 @@ const ReactionPicker = ({ onSelect, onClose }) => {
                 ))}
             </div>
             
-            {/* Inline style for animation */}
+           {/* animation keyframes */}
             <style>{`
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(10px); }

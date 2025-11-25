@@ -32,7 +32,7 @@ const CommentItem = ({ comment, postId, onReplySubmit, onChildReplyAdd }) => {
       user: JSON.parse(localStorage.getItem('user'))
   }), []);
 
-  const API_URL = 'https://appify-lab-task-backend.vercel.app';
+  const API_URL = 'http://localhost:5000';
   const isReply = !!comment.parentComment;
 
   // --- HANDLERS ---

@@ -9,7 +9,7 @@ import { formatTimeAgo } from "../utils/dateUtils";
 
 const PostItem = ({ post, onDelete }) => {
   // --- Global / Auth ---
-  const API_URL = "https://appify-lab-task-backend.vercel.app";
+  const API_URL = "http://localhost:5000";
   const { token, user } = useMemo(() => ({
       token: localStorage.getItem("token"),
       user: JSON.parse(localStorage.getItem("user"))
@@ -47,17 +47,13 @@ const PostItem = ({ post, onDelete }) => {
 
   // --- Handlers ---
 
-  // --- UPDATED DELETE HANDLER (No Confirm + Dark Toast) ---
+
   const handleDelete = async () => {
     try {
         await axios.delete(`${API_URL}/posts/${post._id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        
-        // Update UI immediately
         if (onDelete) onDelete(post._id);
-
-        // Show Dark Toast
         toast.success("Post deleted successfully", { theme: "dark" });
 
     } catch (err) {
@@ -68,15 +64,14 @@ const PostItem = ({ post, onDelete }) => {
 
   const handleReaction = useCallback(async (type) => {
     const isRemoving = myReaction === type;
-    const newReaction = isRemoving ? null : type;
-    
+    const newReaction = isRemoving ? null : type; 
     setMyReaction(newReaction);
-    
     setLikesCount(prev => {
         if (isRemoving) return Math.max(0, prev - 1);
         return myReaction ? prev : prev + 1;
     });
 
+    
     if (!isRemoving && !myReaction) {
         const me = { _id: user._id, profilePic: user.profilePic };
         setRecentReactors(prev => [me, ...prev].slice(0, 3));
