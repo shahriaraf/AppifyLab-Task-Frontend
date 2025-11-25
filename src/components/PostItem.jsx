@@ -9,7 +9,7 @@ import { formatTimeAgo } from "../utils/dateUtils";
 
 const PostItem = ({ post, onDelete }) => {
   // --- Global / Auth ---
-  const API_URL = "http://localhost:5000";
+  const API_URL = "https://appify-lab-task-backend.vercel.app";
   const { token, user } = useMemo(() => ({
       token: localStorage.getItem("token"),
       user: JSON.parse(localStorage.getItem("user"))
@@ -71,7 +71,7 @@ const PostItem = ({ post, onDelete }) => {
         return myReaction ? prev : prev + 1;
     });
 
-    
+
     if (!isRemoving && !myReaction) {
         const me = { _id: user._id, profilePic: user.profilePic };
         setRecentReactors(prev => [me, ...prev].slice(0, 3));
